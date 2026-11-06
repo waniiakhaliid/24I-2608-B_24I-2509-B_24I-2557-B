@@ -1,15 +1,4 @@
-# Ignore everything by default
-*
 
-# Keep folders
-!*/
-
-# Hide validator test cases
-lifeline/validator/tests/
-
-# Keep Git files
-!.gitignore
-!.gitkeep
 
 # Always ignore these
 .venv/

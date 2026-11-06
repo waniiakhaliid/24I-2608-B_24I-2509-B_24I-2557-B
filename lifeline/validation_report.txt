@@ -1,0 +1,124 @@
+== lifeline/cases.xlsx (full check, 50 cases) ==
+84-00: PASS
+84-01: PASS
+84-02: PASS
+84-03: PASS
+84-04: PASS
+84-05: PASS
+84-06: PASS
+84-07: PASS
+84-08: PASS
+84-09: PASS
+84-10: PASS
+84-11: PASS
+84-12: PASS
+84-13: PASS
+84-14: PASS
+84-15: PASS
+84-16: PASS
+84-17: PASS
+84-18: PASS
+84-19: PASS
+84-20: PASS
+84-21: PASS
+84-22: PASS
+84-23: PASS
+84-24: PASS
+84-25: PASS
+84-26: PASS
+84-27: PASS
+84-28: PASS
+84-29: PASS
+84-30: PASS
+84-31: PASS
+84-32: PASS
+84-33: PASS
+84-34: PASS
+84-35: PASS
+84-36: PASS
+84-37: PASS
+84-38: PASS
+84-39: PASS
+84-40: PASS
+84-41: PASS
+84-42: PASS
+84-43: PASS
+84-44: PASS
+84-45: PASS
+84-46: PASS
+84-47: PASS
+84-48: PASS
+84-49: PASS
+workbook-level rules (sheets, headers, 50 cases, variety rules): PASS
+OVERALL: PASS
+
+== valid test cases (must PASS) ==
+valid_84-05.xlsx: PASS
+valid_84-22.xlsx: PASS
+valid_84-47.xlsx: PASS
+
+== broken copies (must be REJECTED with the expected rule) ==
+broken_84-05_bad_log_symbol__V2.xlsx: REJECTED  [V2] log has symbols outside the 38-symbol alphabet
+broken_84-05_capacity_too_big__V2.xlsx: REJECTED  [V2] capacity 1000000 not within 10%..70% of total weight 98
+broken_84-05_cover_misses_edge__V6.xlsx: REJECTED  [V6] cover: sensor_k distinct existing nodes with 2 <= k <= n/2
+broken_84-05_disconnected_network__V4.xlsx: REJECTED  [V4] network is not connected before closures
+broken_84-05_duplicate_serial__V3.xlsx: REJECTED  [V3] serials not distinct
+broken_84-05_edit_bound_too_small__V5.xlsx: REJECTED  [V5] edit_bound 0 must lie in [4, 59]
+broken_84-05_first_tick_not_zero__V2.xlsx: REJECTED  [V2] ticks must start at 0 and never decrease
+broken_84-05_header_renamed__V1.xlsx: REJECTED  [V1] sheet crates: header must be ['case_id', 'crate_id', 'cat', 'weight', 'value', 'expiry', 'serial']
+broken_84-05_outbreak_expiry_signature__V7.xlsx: REJECTED  [V7] outbreak: fewer than half of the crates expire by hour 300
+broken_84-05_ration_sum_wrong__V6.xlsx: REJECTED  [V6] planted rations do not sum to rations_target
+broken_84-05_road_u_ge_v__V3.xlsx: REJECTED  [V3] road 0: need 0 <= u < v < V
+broken_84-05_road_unknown_location__V3.xlsx: REJECTED  [V3] road 0: need 0 <= u < v < V
+broken_84-05_safety_rule_violated__V6.xlsx: REJECTED  [V6] planted assignment violates rule 1
+broken_84-05_tour_not_permutation__V6.xlsx: REJECTED  [V6] planted tour is not a permutation of all sites starting at site 0
+broken_84-05_waves_overlap__V4.xlsx: REJECTED  [V4] waves are not disjoint
+broken_84-05_weight_21__V2.xlsx: REJECTED  [V2] crate 1 has a field out of range
+broken_84-05_window_finish_eq_start__V2.xlsx: REJECTED  [V2] a window violates 0<=start<finish<=1440, duration 5..480, value 1..100
+broken_84-05_wrong_claim__V5.xlsx: REJECTED  [V5] claim cargo_opt=315 but recomputed 314
+broken_84-05_wrong_pattern_count__V5.xlsx: REJECTED  [V5] pattern counts wrong (recomputed [118, 45, 0, 1, 0, 0])
+broken_84-05_wrong_tier__V1.xlsx: REJECTED  [V1] wrong tier or scenario for case_no
+broken_84-05_wrong_tour_length__V6.xlsx: REJECTED  [V6] tour_length 3003 != recomputed closed length 3002
+broken_84-22_bad_log_symbol__V2.xlsx: REJECTED  [V2] log has symbols outside the 38-symbol alphabet
+broken_84-22_capacity_too_big__V2.xlsx: REJECTED  [V2] capacity 1000000 not within 10%..70% of total weight 779
+broken_84-22_cover_misses_edge__V6.xlsx: REJECTED  [V6] cover: sensor_k distinct existing nodes with 2 <= k <= n/2
+broken_84-22_disconnected_network__V4.xlsx: REJECTED  [V4] network is not connected before closures
+broken_84-22_duplicate_serial__V3.xlsx: REJECTED  [V3] serials not distinct
+broken_84-22_edit_bound_too_small__V5.xlsx: REJECTED  [V5] edit_bound 0 must lie in [22, 296]
+broken_84-22_first_tick_not_zero__V2.xlsx: REJECTED  [V2] ticks must start at 0 and never decrease
+broken_84-22_header_renamed__V1.xlsx: REJECTED  [V1] sheet crates: header must be ['case_id', 'crate_id', 'cat', 'weight', 'value', 'expiry', 'serial']
+broken_84-22_landslide_two_waves_signature__V7.xlsx: REJECTED  [V7] landslide: fewer than 3 waves
+broken_84-22_ration_sum_wrong__V6.xlsx: REJECTED  [V6] planted rations do not sum to rations_target
+broken_84-22_road_u_ge_v__V3.xlsx: REJECTED  [V3] road 0: need 0 <= u < v < V
+broken_84-22_road_unknown_location__V3.xlsx: REJECTED  [V3] road 0: need 0 <= u < v < V
+broken_84-22_safety_rule_violated__V6.xlsx: REJECTED  [V6] planted assignment violates rule 1
+broken_84-22_tour_not_permutation__V6.xlsx: REJECTED  [V6] planted tour is not a permutation of all sites starting at site 0
+broken_84-22_waves_overlap__V4.xlsx: REJECTED  [V4] waves are not disjoint
+broken_84-22_weight_21__V2.xlsx: REJECTED  [V2] crate 1 has a field out of range
+broken_84-22_window_finish_eq_start__V2.xlsx: REJECTED  [V2] a window violates 0<=start<finish<=1440, duration 5..480, value 1..100
+broken_84-22_wrong_pattern_count__V5.xlsx: REJECTED  [V5] pattern counts wrong (recomputed [2, 1, 1, 0, 0, 0])
+broken_84-22_wrong_tier__V1.xlsx: REJECTED  [V1] wrong tier or scenario for case_no
+broken_84-22_wrong_tour_length__V6.xlsx: REJECTED  [V6] tour_length 4023 != recomputed closed length 4022
+broken_84-47_bad_log_symbol__V2.xlsx: REJECTED  [V2] log has symbols outside the 38-symbol alphabet
+broken_84-47_capacity_too_big__V2.xlsx: REJECTED  [V2] capacity 1000000 not within 10%..70% of total weight 301
+broken_84-47_cover_misses_edge__V6.xlsx: REJECTED  [V6] cover: sensor_k distinct existing nodes with 2 <= k <= n/2
+broken_84-47_disconnected_network__V4.xlsx: REJECTED  [V4] network is not connected before closures
+broken_84-47_duplicate_serial__V3.xlsx: REJECTED  [V3] serials not distinct
+broken_84-47_edit_bound_too_small__V5.xlsx: REJECTED  [V5] edit_bound 0 must lie in [68, 813]
+broken_84-47_first_tick_not_zero__V2.xlsx: REJECTED  [V2] ticks must start at 0 and never decrease
+broken_84-47_greedy_not_fooled_trap47__V8.xlsx: REJECTED  [V8] trap 47: greedy reaches 200/200 > 60% of optimum
+broken_84-47_header_renamed__V1.xlsx: REJECTED  [V1] sheet crates: header must be ['case_id', 'crate_id', 'cat', 'weight', 'value', 'expiry', 'serial']
+broken_84-47_ration_sum_wrong__V6.xlsx: REJECTED  [V6] planted rations do not sum to rations_target
+broken_84-47_road_u_ge_v__V3.xlsx: REJECTED  [V3] road 0: need 0 <= u < v < V
+broken_84-47_road_unknown_location__V3.xlsx: REJECTED  [V3] road 0: need 0 <= u < v < V
+broken_84-47_safety_rule_violated__V6.xlsx: REJECTED  [V6] planted assignment violates rule 1
+broken_84-47_tour_not_permutation__V6.xlsx: REJECTED  [V6] planted tour is not a permutation of all sites starting at site 0
+broken_84-47_waves_overlap__V4.xlsx: REJECTED  [V4] waves are not disjoint
+broken_84-47_weight_21__V2.xlsx: REJECTED  [V2] crate 1 has a field out of range
+broken_84-47_window_finish_eq_start__V2.xlsx: REJECTED  [V2] a window violates 0<=start<finish<=1440, duration 5..480, value 1..100
+broken_84-47_wrong_pattern_count__V5.xlsx: REJECTED  [V5] pattern counts wrong (recomputed [1901, 985, 948, 177, 189, 0])
+broken_84-47_wrong_tier__V1.xlsx: REJECTED  [V1] wrong tier or scenario for case_no
+broken_84-47_wrong_tour_length__V6.xlsx: REJECTED  [V6] tour_length 23187 != recomputed closed length 23186
+
+broken copies rejected: 61/61
+OVERALL: PASS
