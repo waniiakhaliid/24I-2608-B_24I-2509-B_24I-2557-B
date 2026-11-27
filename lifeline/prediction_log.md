@@ -34,4 +34,34 @@
   when many small crates fill the truck, but trap 47 is built so that the best
   value-per-kg crate blocks the better combination.
 - **After the run:**
+  - **Measured vs predicted:**
+    | Prediction | Measured | Verdict |
+    |---|---|---|
+    | DP time slope 2.0 +/- 0.2 | 2.132 +/- 0.209 (95% CI), R2 0.9972 | Held (CI contains 2.0) |
+    | Greedy time slope 1.1 +/- 0.3 | 1.196 +/- 0.296, R2 0.9821 | Held |
+    | DP at n=1600 about 2 s (x/÷ 3) | 1.020 s | Inside tolerance, low end |
+    | Greedy at n=1600 under 5 ms | 6.35 ms | Missed |
+    | DP/greedy time ratio at n=1600 about 500 (x/÷ 4) | about 161 | Inside tolerance, low end |
+    | Greedy >= 95% of DP on ordinary cases | M and L: 99.6% to 100%; tier S: 2-01 61.8%, 3-02 92.2%, 1-00 94.98% | Held for M and L, wrong for tier S |
+    | Trap 47: greedy about 55% of DP (+/- 10 points) | 7-47: 40 / 94 = 42.6% | Missed |
+    | DP equals cargo_opt on all 10 tier S cases | (fill in from pytest output) | Pending |
+  - **What I got wrong and why:**
+    - Cost per cell was about 0.107 us (1.020 s / 9.52M cells), not the 0.2 us I
+      assumed, so the absolute DP time was overestimated by about 2x. The slope was
+      unaffected because it depends on the cell count, not the constant.
+    - Greedy was slower than 5 ms because sorting with a Python comparison function
+      costs more than I allowed for.
+    - The 55% figure for trap 47 came from our own case 84-47. Case 7-47 comes from
+      group 7's generator, and its trap is harsher (42.6%). This is a likely
+      explanation, not a tested one.
+    - "At least 95% on ordinary cases" was too broad. Tiny tier S instances leave
+      greedy little room to fill the truck, so it can lose badly there. Traps 46, 48
+      and 49 are not knapsack traps: greedy reached 99.9% or more on them.
+  - **Cell count:** 9,522,166 at n=1600 is slightly below n x (W+1) = 9,540,000
+    because the code counts W - wi + 1 cells per crate. This is not a clash.
+  - **Theory vs measurement clash:** Predicting n=1600 from a fit on the first four
+    sizes erred by 45.2% for DP (14.1% for greedy), although the slope CI is only
+    +/- 0.2. The IQR reached about 30% of the median at n=800 (0.092 s on 0.301 s),
+    so timing noise is the likely cause. This is a hypothesis; more repeats on a
+    quieter machine would test it.
   

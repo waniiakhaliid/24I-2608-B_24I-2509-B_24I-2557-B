@@ -3,7 +3,6 @@
 Operation counts (defined in README):
   DP     : table cells computed (sum over crates of W - wi + 1, for wi <= W)
   greedy : key comparisons while sorting + crates examined
-  brute  : subsets evaluated
 Tie rule (DP): a crate is taken only if it strictly improves the value,
 so on equal value the earlier crates are preferred. Deterministic.
 """
@@ -89,25 +88,6 @@ def knapsack_greedy(weights, values, capacity):
             chosen.append(i)
     chosen.sort()
     return _result(weights, values, chosen, comps[0] + examined)
-
-
-def knapsack_bruteforce(weights, values, capacity, max_n=20):
-    """Reference: all 2^n subsets. Only for n <= max_n."""
-    check_input(weights, values, capacity)
-    n = len(weights)
-    if n > max_n:
-        raise KnapsackInputError(f"brute force limited to n <= {max_n}, got {n}")
-    best_v, best_mask = -1, 0
-    for mask in range(1 << n):
-        w = v = 0
-        for i in range(n):
-            if (mask >> i) & 1:
-                w += weights[i]
-                v += values[i]
-        if w <= capacity and v > best_v:
-            best_v, best_mask = v, mask
-    chosen = [i for i in range(n) if (best_mask >> i) & 1]
-    return _result(weights, values, chosen, 1 << n)
 
 
 def crate_arrays(crates_df, multipliers=None):

@@ -1,13 +1,14 @@
 import random
 import pytest
-from modules.knapsack import (knapsack_dp, knapsack_greedy, knapsack_bruteforce,
+from modules.knapsack import (knapsack_dp, knapsack_greedy,
                               crate_arrays, KnapsackInputError)
+from reference import knapsack_bruteforce
 import loader
 from config import CACHE
 
 needs_cache = pytest.mark.skipif(not (CACHE / "crates.csv").exists(),
                                  reason="run src/build_cache.py first")
-SOLVERS = [knapsack_dp, knapsack_greedy, knapsack_bruteforce]
+SOLVERS = [knapsack_dp, knapsack_greedy]
 
 
 def invariants(res, w, v, cap):
@@ -46,8 +47,9 @@ def test_dp_matches_bruteforce_random():
         w = [rng.randint(1, 20) for _ in range(n)]
         v = [rng.randint(0, 100) for _ in range(n)]
         cap = rng.randint(0, max(1, sum(w)))
-        d, b, g = knapsack_dp(w, v, cap), knapsack_bruteforce(w, v, cap), knapsack_greedy(w, v, cap)
-        assert d.value == b.value
+        d, g = knapsack_dp(w, v, cap), knapsack_greedy(w, v, cap)
+        b = knapsack_bruteforce(w, v, cap)[0]
+        assert d.value == b
         invariants(d, w, v, cap)
         invariants(g, w, v, cap)
         assert g.value <= d.value
@@ -68,7 +70,7 @@ def test_tier_s_against_claims():
         r = knapsack_dp(w, v, cap)
         invariants(r, w, v, cap)
         assert r.value == claim, f"{cid}: DP {r.value} != claim {claim}"
-        assert knapsack_bruteforce(w, v, cap).value == claim
+        assert knapsack_bruteforce(w, v, cap)[0] == claim
 
 
 @needs_cache

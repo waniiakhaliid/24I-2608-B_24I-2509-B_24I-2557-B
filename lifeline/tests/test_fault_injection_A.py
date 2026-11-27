@@ -1,6 +1,7 @@
 import random
 import modules.knapsack as K
-from modules.knapsack import knapsack_dp, knapsack_bruteforce
+from modules.knapsack import knapsack_dp
+from reference import knapsack_bruteforce
 
 
 def dp_value_with_bug(weights, values, cap, bug):
@@ -15,7 +16,7 @@ def dp_value_with_bug(weights, values, cap, bug):
         else:
             rng = range(cap, wi - 1, -1)
         for w in rng:
-            best[w] = max(best[w], best[w - wi] + values[i])
+            best[w] = max(best[w], best[w - wi] + vi)
     return best[cap]
 
 
@@ -27,7 +28,7 @@ def reference_check_fails(solver_value):
         w = [rng.randint(1, 20) for _ in range(n)]
         v = [rng.randint(1, 100) for _ in range(n)]
         cap = rng.randint(1, sum(w))
-        if solver_value(w, v, cap) != knapsack_bruteforce(w, v, cap).value:
+        if solver_value(w, v, cap) != knapsack_bruteforce(w, v, cap)[0]:
             return True
     return False
 
@@ -55,4 +56,4 @@ def test_fault_missing_validation_is_caught(monkeypatch):
         rejected = False
     except K.KnapsackInputError:
         rejected = True
-    assert not rejected                  # the validation test would now fail: fault detected
+    assert not rejected                  # without validation the bad input slips through: fault detected
