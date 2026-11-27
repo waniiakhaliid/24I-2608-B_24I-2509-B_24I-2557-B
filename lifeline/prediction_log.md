@@ -34,6 +34,11 @@
   when many small crates fill the truck, but trap 47 is built so that the best
   value-per-kg crate blocks the better combination.
 - **After the run:**
+- **Commit after run:** 
+-  commit 94aa1aff6d14c139adb61d534d986eef11778f91 (HEAD -> main)
+-  add experiment_knapsack,separated bruteforce knapsack into test folder
+-  Date:   Fri Nov 27 14:59:05 2026 +0500
+-  Author: waniiakhaliid <waniiakhaliidwork.gmail.com>
   - **Measured vs predicted:**
     | Prediction | Measured | Verdict |
     |---|---|---|
@@ -44,7 +49,7 @@
     | DP/greedy time ratio at n=1600 about 500 (x/÷ 4) | about 161 | Inside tolerance, low end |
     | Greedy >= 95% of DP on ordinary cases | M and L: 99.6% to 100%; tier S: 2-01 61.8%, 3-02 92.2%, 1-00 94.98% | Held for M and L, wrong for tier S |
     | Trap 47: greedy about 55% of DP (+/- 10 points) | 7-47: 40 / 94 = 42.6% | Missed |
-    | DP equals cargo_opt on all 10 tier S cases | (fill in from pytest output) | Pending |
+    | DP equals cargo_opt on all 10 tier S cases | DP equals cargo_opt on all 10 tier S cases | Held (test_tier_s_against_claims passes)|
   - **What I got wrong and why:**
     - Cost per cell was about 0.107 us (1.020 s / 9.52M cells), not the 0.2 us I
       assumed, so the absolute DP time was overestimated by about 2x. The slope was
@@ -64,4 +69,44 @@
     +/- 0.2. The IQR reached about 30% of the median at n=800 (0.092 s on 0.301 s),
     so timing noise is the likely cause. This is a hypothesis; more repeats on a
     quieter machine would test it.
+
+### Entry 2: Module B (route planning) heap Dijkstra vs Bellman-Ford, scaling with V
+- **Date and time written:** 2026-11-27 HH:MM  (fill in the real time)
+- **Commit before run:** (fill in the hash after committing this entry)
+- **Experiment:** Single-source cheapest cost from the HQ (location 0) on random
+  connected graphs built from seed 84 (random spanning tree plus extra roads,
+  E = 3V, minutes 1 to 60, penalties from {0, 1, 2, 4, 6}), V = 250, 500, 1000,
+  2000, 4000. Networks are not pooled. Primary: heap Dijkstra. Baseline:
+  Bellman-Ford (stops early when a full pass changes nothing). BFS (fewest roads)
+  is timed as an extra series. Also run on the 22 sample cases (cost, reachability)
+  and on trap 4-48, comparing the cost of the fewest-roads route with the cheapest.
+  Time: 1 warm-up, median of 5, IQR. Operation counts: relaxations attempted,
+  edges examined, heap operations (Dijkstra); passes and relaxations (Bellman-Ford);
+  nodes visited (BFS).
+- **Expected winner:** Heap Dijkstra on speed. Both give the same cost, which is
+  checked on every input.
+- **Numerical prediction (with tolerance):**
+  1. Dijkstra time slope vs V: 1.1 (tolerance +/- 0.25), since E = 3V and the cost is
+     O((V+E) log V).
+  2. Bellman-Ford time slope vs V: 1.4 (tolerance +/- 0.35). Worst case is O(VE),
+     slope 2, but early exit should stop after about the depth of the shortest-path
+     tree, which grows slowly on a random graph.
+  3. Dijkstra at V = 4000 (E = 12,000): about 10 ms, tolerance x/÷ 3.
+  4. Bellman-Ford / Dijkstra time ratio at V = 4000: about 4, tolerance x/÷ 3.
+  5. Bellman-Ford passes at V = 4000: about 15, tolerance x/÷ 2.
+  6. On trap 4-48, the fewest-roads route costs about 3 times the cheapest, tolerance
+     between 1.5 and 6. Our own trap 84-48 gave 5.7 in the proposal; I expect group 4
+     to differ.
+  7. Day-1 destination is reachable on all 22 sample cases (no tolerance).
+  8. Dijkstra and Bellman-Ford agree on cost on every input (no tolerance).
+- **Reasoning:** The sample summary shows E is about 1.1 to 1.3 times V on real cases,
+  so the maps are sparse and the heap pays off. Bellman-Ford only reaches its
+  quadratic worst case if shortest paths are long chains, which a random spanning
+  tree plus extra roads should avoid. The absolute times assume about 0.5 microseconds
+  per edge in Python heap code; this is my least certain number. I expect the
+  slopes to be better predicted than the times, as in Module A.
+- **After the run:**
+  - Measured:
+  - What I got wrong and why:
+  - Theory vs measurement clash (if any):
   
