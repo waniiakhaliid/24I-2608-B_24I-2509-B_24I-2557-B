@@ -1,6 +1,9 @@
 ### Entry 1: Module A (relief inventory) DP vs ratio greedy, scaling with n
-- **Date and time written:** 2026-11-27 HH:MM  (fill in the real time)
-- **Commit before run:** (fill in the hash after committing this entry)
+- **Date and time written:** 
+   Fri Nov 27 10:02:49 2026 +0500
+- **Commit before run:** 
+-   commit fa207dc570253ceaa8966b7d77e008e021112cdb (HEAD -> main)
+-  Author: waniiakhaliid <waniiakhaliidwork.gmail.com>
 - **Experiment:** 0/1 knapsack on pooled crate sets of n = 100, 200, 400, 800, 1600
   (consecutive sampled cases joined as in Section 4.3). Capacity per input is set
   to the same fraction of total weight as in the sample (about 0.3 to 0.4). Primary:
