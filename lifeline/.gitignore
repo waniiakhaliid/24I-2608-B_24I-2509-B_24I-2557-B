@@ -1,5 +1,17 @@
+# Master dataset: too large for git (keep CHECKSUMS.txt and README.md)
+data/*.csv
 
-
-# Always ignore these
-.venv/
+# Python
 __pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Large generated output (keep results.csv, plots, tables)
+results/*.tmp
