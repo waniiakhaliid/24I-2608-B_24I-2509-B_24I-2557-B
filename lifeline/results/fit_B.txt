@@ -1,0 +1,4 @@
+Heap-Dijkstra: slope=1.112 +/- 0.092 (95% CI) R2=0.9980 prediction error at V=4000: 4.3%
+Bellman-Ford: slope=1.228 +/- 0.164 (95% CI) R2=0.9948 prediction error at V=4000: 5.8%
+BFS-levels: slope=1.231 +/- 0.166 (95% CI) R2=0.9946 prediction error at V=4000: 26.0%
+Bellman-Ford / Dijkstra time at V=4000: 1.29

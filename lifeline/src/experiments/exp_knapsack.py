@@ -1,16 +1,20 @@
 """Module A experiments: scaling (5 geometric sizes) and quality on the sample."""
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))   # makes src/ importable
+
 import math
 import tracemalloc
 import pandas as pd
 import loader
 from config import CACHE, RESULTS
 from harness import time_it, log_row, reset_module
+from stats import loglog_fit
 from modules.knapsack import knapsack_dp, knapsack_greedy, crate_arrays
 
 SIZES = [100, 200, 400, 800, 1600]
 FRACTION = 0.35                  # capacity = 35% of total weight (sample range 0.10-0.64)
 ALGOS = {"DP-capacity": knapsack_dp, "Ratio-greedy": knapsack_greedy}
-T975 = {1: 12.706, 2: 4.303, 3: 3.182, 4: 2.776, 5: 2.571}
 
 
 def pooled(n):
@@ -22,19 +26,6 @@ def pooled(n):
         w += cw
         v += cv
     return w[:n], v[:n]
-
-
-def loglog_fit(xs, ys):
-    lx, ly = [math.log(x) for x in xs], [math.log(y) for y in ys]
-    n = len(xs)
-    mx, my = sum(lx) / n, sum(ly) / n
-    sxx = sum((a - mx) ** 2 for a in lx)
-    slope = sum((a - mx) * (b - my) for a, b in zip(lx, ly)) / sxx
-    icpt = my - slope * mx
-    ss_res = sum((b - (icpt + slope * a)) ** 2 for a, b in zip(lx, ly))
-    ss_tot = sum((b - my) ** 2 for b in ly)
-    ci = T975[n - 2] * math.sqrt(ss_res / (n - 2) / sxx)
-    return slope, ci, 1 - ss_res / ss_tot, icpt
 
 
 def scaling():

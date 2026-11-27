@@ -72,7 +72,13 @@
 
 ### Entry 2: Module B (route planning) heap Dijkstra vs Bellman-Ford, scaling with V
 - **Date and time written:** 2026-11-27 HH:MM  (fill in the real time)
-- **Commit before run:** (fill in the hash after committing this entry)
+- **Commit before run:** 
+- commit f5e1d6b6f25ea7be3edc24c39a94e3f482797dbd (HEAD -> main)
+-  Module B: updated prediction log
+- Author: waniiakhaliid <waniiakhaliidwork.gmail.com>
+- Date:   Fri Nov 27 15:37:48 2026 +0500
+
+    
 - **Experiment:** Single-source cheapest cost from the HQ (location 0) on random
   connected graphs built from seed 84 (random spanning tree plus extra roads,
   E = 3V, minutes 1 to 60, penalties from {0, 1, 2, 4, 6}), V = 250, 500, 1000,
@@ -106,7 +112,42 @@
   per edge in Python heap code; this is my least certain number. I expect the
   slopes to be better predicted than the times, as in Module A.
 - **After the run:**
-  - Measured:
-  - What I got wrong and why:
-  - Theory vs measurement clash (if any):
-  
+- **After the run:**
+  - **Measured vs predicted:**
+    | # | Prediction | Measured | Verdict |
+    |---|---|---|---|
+    | 1 | Dijkstra time slope 1.1 +/- 0.25 | 1.112 +/- 0.092 (95% CI), R2 0.9980 | Held |
+    | 2 | Bellman-Ford time slope 1.4 +/- 0.35 | 1.228 +/- 0.164, R2 0.9948 | Held, below my guess |
+    | 3 | Dijkstra at V=4000 about 10 ms (x/÷ 3) | 26.6 ms | Inside tolerance, high end |
+    | 4 | Bellman-Ford / Dijkstra time ratio at V=4000 about 4 (x/÷ 3) | 1.29 | Missed |
+    | 5 | Bellman-Ford passes at V=4000 about 15 (x/÷ 2) | 8 | Held, low end |
+    | 6 | Trap 4-48: fewest-roads route about 3x the cheapest (1.5 to 6) | Day 1: 187 / 59 = 3.17 | Held |
+    | 7 | Day-1 destination reachable on all 22 sample cases | Yes (test passes) | Held |
+    | 8 | Dijkstra and Bellman-Ford agree on cost everywhere | 0 disagreements on 154 case-days and 5 random sizes | Held |
+  - **What I got wrong and why:**
+    - Bellman-Ford needed only 5 to 8 passes, because shortest-path trees on these
+      random graphs are shallow and the early exit stops the passes early. Its
+      relaxations grew from 7,490 to 191,984 (about 26x for 16x the size), so it
+      behaved near-linearly in practice despite the O(VE) worst case.
+    - Dijkstra did 5.4x fewer operations than Bellman-Ford at V=4000 (35,772 vs
+      191,984) but was only 1.29x faster in time. Each heap operation is several
+      Python statements, while Bellman-Ford's inner loop is a single comparison.
+      At V=1000 Bellman-Ford was faster (5.56 ms vs 6.23 ms), and the order also
+      flipped at V=250 and V=500. The operation counts favour Dijkstra clearly; the
+      wall clock barely does.
+    - Absolute time was underestimated: about 1.1 us per edge examined against my
+      0.5 us.
+  - **Theory vs measurement clash:** Operation counts say Dijkstra wins by 5.4x;
+    measured time says 1.29x, and it loses at some sizes. The cause is the constant
+    factor of the Python heap (hypothesis, not separately tested). Also, the
+    extrapolation error from four sizes to V=4000 was 4.3% (Dijkstra), 5.8%
+    (Bellman-Ford) and 26.0% (BFS). BFS times are very small (0.13 to 4.2 ms), so
+    timing noise is the likely cause (hypothesis).
+  - **Trap and reachability observations:**
+    - On 4-48 the fewest-roads route costs 3.17x the cheapest on days 1 and 7 and
+      3.37x on day 4. On days 2, 3 and 5 (storm, closures) the ratio is only about
+      1.1x, so this trap bites mainly on days with no minute multiplier or closure.
+    - Case 2-01 on day 1 shows a ratio of 20, larger than the designated trap case.
+    - The target is unreachable in 46 of 154 case-days (day 2: 4, day 3: 8, day 4: 5,
+      day 5: 5, day 6: 13, day 7: 11). On 4-48, day 6 is unreachable. The campaign
+      must therefore check reachability every day and skip the trip when it fails.
