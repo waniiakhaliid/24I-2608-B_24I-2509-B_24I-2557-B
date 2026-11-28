@@ -134,6 +134,8 @@ Group seed: 84 | Course: DAA, FAST-NUCES Islamabad
   (writes `results/results_A.csv` and `results/fit_A.txt`)
 - Combine results into `results/results.csv`: `uv run python src/combine_results.py`
 - Run 7-day campaign: TODO
+- Module C: 
+- uv run python -c "import pandas as pd; d=pd.read_csv('results/sample_data/windows.csv'); print((d.finish-d.start).min())"
 
 Random seeds: group seed 84 (sample rule, random tests, any generated graphs).
 

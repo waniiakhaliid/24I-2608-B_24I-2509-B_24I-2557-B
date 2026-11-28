@@ -1,0 +1,6 @@
+EF-greedy: slope=1.203 +/- 0.141 (95% CI) R2=0.9960 prediction error at n=3200: 9.6%
+Weighted-DP: slope=1.019 +/- 0.381 (95% CI) R2=0.9602 prediction error at n=3200: 11.9%
+Value-greedy: slope=0.776 +/- 0.330 (95% CI) R2=0.9491 prediction error at n=3200: 0.2%
+Weighted-DP / EF-greedy time at n=3200: 0.99
+Value-greedy value / DP value: n=200: 0.976, n=400: 0.954, n=800: 0.885, n=1600: 0.844, n=3200: 0.827
+Value-greedy count / EF count: n=200: 0.945, n=400: 0.879, n=800: 0.816, n=1600: 0.766, n=3200: 0.750

@@ -43,3 +43,26 @@ def route_bruteforce(penalties, roads, closed, source, max_n=8):
 
     dfs(source, 0, {source})
     return best
+
+
+def windows_bruteforce(windows, max_n=14):
+    """Exact interval scheduling by trying every compatible subset.
+    Windows are (id, start, finish, value). Returns (max_count, max_value),
+    each maximised independently."""
+    n = len(windows)
+    if n > max_n:
+        raise ValueError(f"brute force limited to n <= {max_n}, got {n}")
+    best = [0, 0]
+
+    def rec(i, chosen, count, value):
+        if i == n:
+            best[0] = max(best[0], count)
+            best[1] = max(best[1], value)
+            return
+        rec(i + 1, chosen, count, value)                       # skip window i
+        _, s, f, v = windows[i]
+        if all(f <= c[1] or c[2] <= s for c in chosen):        # compatible with all chosen
+            rec(i + 1, chosen + [windows[i]], count + 1, value + v)
+
+    rec(0, [], 0, 0)
+    return best[0], best[1]

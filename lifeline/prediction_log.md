@@ -152,8 +152,12 @@
       day 5: 5, day 6: 13, day 7: 11). On 4-48, day 6 is unreachable. The campaign
       must therefore check reachability every day and skip the trip when it fails.
 ### Entry 3: Module C (rescue scheduling) earliest-finish greedy and weighted-interval DP vs greedy by value, scaling with n
-- **Date and time written:** 2026-11-28 HH:MM  (fill in the real time)
-- **Commit before run:** (fill in the hash after committing this entry)
+- commit 2d37ed9a883be3757855d344fa91f24edb72cf01 (HEAD -> main)
+- updated prediction log for module C, moved validator generator into data\phase1
+- Author: eshallll <i242509@isb.nu.edu.pk>
+- Date:   Sat Nov 28 07:36:50 2026 +0500
+
+   
 - **Experiment:** Windows from the sampled cases joined in sample order (pooling,
   Section 4.3: window times shifted by 1440 minutes per case, ids renumbered), first
   n = 200, 400, 800, 1600, 3200. Touching windows are compatible (finish <= next
@@ -193,7 +197,46 @@
   looked at how heavily the sample windows overlap, only that tier L cases have about
   1,000 to 2,500 windows in a 1440-minute day. The absolute times assume about 1 to
   2 microseconds per window in pure Python.
+
 - **After the run:**
-  - Measured:
-  - What I got wrong and why:
-  - Theory vs measurement clash (if any):      
+  - **Measured vs predicted:**
+    | # | Prediction | Measured | Verdict |
+    |---|---|---|---|
+    | 1 | Time slope 1.1 +/- 0.25 for all three algorithms | EF-greedy 1.203 +/- 0.141 (R2 0.9960); Weighted-DP 1.019 +/- 0.381 (R2 0.9602); Value-greedy 0.776 +/- 0.330 (R2 0.9491) | Held for EF and DP; missed for Value-greedy (0.776 is below 0.85) |
+    | 2a | Weighted-DP at n=3200 about 15 ms (x/÷ 3) | 20.7 ms | Held |
+    | 2b | EF-greedy at n=3200 about 5 ms (x/÷ 3) | 20.9 ms | Missed (limit was 15 ms) |
+    | 3 | DP / EF time ratio at n=3200 about 3 (x/÷ 2.5) | 0.99 | Missed |
+    | 4 | Value-greedy value about 80% of DP (+/- 15 points) | 82.7% at n=3200 (97.6% at n=200, falling to 82.7%) | Held at n=3200; the ratio drifts with n |
+    | 5 | Value-greedy count about 70% of EF (+/- 20 points) | 75.0% at n=3200 (94.5% at n=200) | Held at n=3200; the ratio drifts with n |
+    | 6 | EF count = window_count_opt and DP value = window_value_opt on all 10 tier S cases | test_tier_s_against_claims passes | Held |
+    | 7 | DP value and EF count never beaten on any input | Held on all 22 quality rows and all five pooled sizes (asserted in the script) | Held |
+  - **What I got wrong and why:**
+    - EF-greedy and Weighted-DP took almost the same time (ratio 0.99), not 3x. The
+      merge sort dominates both: it is the same sort, and the extra work in the DP
+      (a binary search per window) is small next to it. In operations the DP costs
+      1.44x as much as EF at n=3200 (107,015 vs 74,274), but the time hides that.
+    - The absolute times were underestimated: about 6.5 us per window for EF-greedy
+      (20.9 ms / 3200) against my 1 to 2 us. The own merge sort in pure Python is the
+      likely reason (hypothesis).
+    - Value-greedy's slope (0.776) is below 1 with a wide CI. The times are small
+      (2.5 ms to 17 ms), and its time at n=3200 (17.1 ms) was below EF-greedy's, so
+      timing noise is the likely cause (hypothesis).
+    - I expected the quality ratios not to drift with n, because pooled blocks are
+      independent. They did drift (value ratio 0.976, 0.954, 0.885, 0.844, 0.827).
+      The pool joins cases in sample order, so the first 200 windows come from small
+      tier S cases, and larger, denser cases enter as n grows. The per-case rows
+      agree (below). This is a hypothesis; I did not test pools in a different order.
+  - **Per-case quality (Value-greedy / DP value):** tier S is 1.000 on 8 of 10 cases
+    (1-00 is 0.881, 3-09 is 0.756). Tier M ranges 0.581 to 0.920. Tier L ranges
+    0.513 to 0.678. Trap cases: 1-46 0.568, 2-49 0.627, 7-47 0.520, and 4-48 is 0.210
+    (count ratio 0.107), the worst case in the sample. Value-greedy is therefore worse
+    than the DP on at least one case (test_value_greedy_loses_somewhere passes).
+  - **Pooling check:** test_pooled_equals_sum_of_cases passes, so the pooled optima
+    equal the sum of the per-case optima and no sampled case has windows past minute
+    1440.
+  - **Theory vs measurement clash:** Operation counts put the DP at 1.44x EF, and
+    Value-greedy at 1.45x EF at n=3200 (107,393 vs 74,274), but measured times are
+    nearly equal for the DP and EF, and Value-greedy is faster than EF at n=3200.
+    The clash comes from constant factors and noise, not from a different growth
+    order; the slope CIs for DP (+/- 0.381) and Value-greedy (+/- 0.330) are too wide
+    to separate the algorithms.
