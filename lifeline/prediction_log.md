@@ -242,8 +242,12 @@
     to separate the algorithms.
 
 ### Entry 4: Module D (emergency queue) binary heap vs linear scan (and bucket queue), scaling with m
-- **Date and time written:** 2026-11-28 HH:MM  (fill in the real time)
-- **Commit before run:** (fill in the hash after committing this entry)
+- commit 33b479587da25ff24855fb253580adbe0bf44fb6 (HEAD -> main)
+- Module D: updated prediction log
+- Author: eshallll <i242509@isb.nu.edu.pk>
+- Date:   Sat Nov 28 08:33:40 2026 +0500
+
+    
 - **Experiment:** Alarms from the sampled cases joined in sample order (pooling,
   Section 4.3: ticks shifted past the previous case, ids renumbered), first
   m = 500, 1000, 2000, 4000, 8000. One alarm is released per tick, in urgency order
@@ -281,6 +285,49 @@
   absolute times assume about 0.5 microseconds per elementary step in Python, as
   in Modules B and C, and I am least sure of the 20x ratio.
 - **After the run:**
-  - Measured:
-  - What I got wrong and why:
-  - Theory vs measurement clash (if any):
+  - **Measured vs predicted:**
+    | # | Prediction | Measured | Verdict |
+    |---|---|---|---|
+    | 1 | Heap time slope 1.15 +/- 0.25 | 1.058 +/- 0.128 (95% CI), R2 0.9957 | Held |
+    | 2 | Linear-scan time slope 1.7 +/- 0.35 | 1.903 +/- 0.170, R2 0.9976 | Held, at the upper end |
+    | 3 | Bucket-queue time slope 1.0 +/- 0.2 | 1.101 +/- 0.122, R2 0.9964 | Held |
+    | 4a | Heap at m=8000 about 80 ms (x/÷ 3) | 65.6 ms | Held |
+    | 4b | Linear scan at m=8000 about 1.5 s (x/÷ 3) | 1.539 s | Held |
+    | 5 | Linear scan / heap time ratio at m=8000 about 20 (x/÷ 3) | 23.47 | Held |
+    | 6 | Heap / bucket time ratio at m=8000 about 3 (x/÷ 2.5) | 1.33 | Held, low end |
+    | 7 | Linear-scan comparisons at m=8000 about 3 million (x/÷ 2) | 11,820,005 | Missed (about 4x higher) |
+    | 8 | All algorithms release the identical order and no alarm before its arrival | agree=True and status OK on all 22 cases, all 7 days and all five pooled sizes; the scaling run asserts it; the Module D tests pass | Held |
+  - **What I got wrong and why:**
+    - The linear-scan comparisons were about 4x my estimate. I assumed the pool is
+      made of independent cases whose backlogs drain separately, giving about
+      m^2/6 per case. The measured peak backlog is a roughly constant share of m
+      (200/500 = 0.40, 401/1000 = 0.40, 751/2000 = 0.38, 1481/4000 = 0.37,
+      2896/8000 = 0.36). That fits a single backlog that never drains: arrivals
+      come at 1.3 to 1.7 per tick, against one release per tick, and the pooled
+      cases are placed back to back, so each case starts while the previous
+      backlog is still waiting. With an average backlog of about 1,480 and 8,000
+      releases, the scan needs about 11.8 million comparisons. This explanation is
+      consistent with the figures; I did not test it with a different pool order.
+    - The scan's slope (1.903) is therefore close to 2, not the 1.7 I expected for
+      a pool of separate cases.
+    - The heap / bucket ratio was 1.33, not 3. The bucket queue did 2.75x fewer
+      operations (216,675 vs 595,300) but only ran 1.33x faster, because each
+      release checks priority levels from the top down and the per-operation
+      overhead in Python is similar for both.
+    - The data property the proposal relies on holds, with exceptions: 16 of the 22
+      cases have 8 to 10 distinct priorities, but 2-01 and 2-49 have only 6, and
+      1-14 has 7 (2-49 has 2,368 alarms on 6 levels, which would favour the bucket
+      queue even more). Alarms per tick range from 1.29 to 1.74 on tiers M, L and X
+      (as the proposal said); 3-16 (tier S) reaches 2.91.
+  - **Campaign extra alarm:** On the days with an added alarm (priority 9 on day 2,
+    priority 10 on day 5), it was released at tick 0 on 20 of 22 cases on day 2
+    and on 21 of 22 on day 5. The exceptions were released at tick 1 or tick 3,
+    because other alarms of equal or higher priority were already waiting at tick 0.
+  - **Theory vs measurement clash:** Operation counts and time agree here, unlike
+    in Modules B and C: the scan did 24.9x the heap's operations (14.79M vs 0.595M)
+    and ran 23.5x slower. The extrapolation error from four sizes to m=8000 was
+    9.0% (heap), 21.0% (scan) and 20.1% (bucket queue). For the scan the cause is
+    visible in the data: its time ratio between successive sizes rose from 3.0x to
+    4.35x, so the growth steepens toward 2 and a four-point fit underestimates
+    the last size. The bucket queue's times are small (2 to 49 ms), so noise is the
+    likely cause there (hypothesis).

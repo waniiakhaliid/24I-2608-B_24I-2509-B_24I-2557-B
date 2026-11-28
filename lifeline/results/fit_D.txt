@@ -1,0 +1,6 @@
+Binary-heap: slope=1.058 +/- 0.128 (95% CI) R2=0.9957 prediction error at m=8000: 9.0%
+Linear-scan: slope=1.903 +/- 0.170 (95% CI) R2=0.9976 prediction error at m=8000: 21.0%
+Bucket-queue: slope=1.101 +/- 0.122 (95% CI) R2=0.9964 prediction error at m=8000: 20.1%
+Linear-scan / Binary-heap time at m=8000: 23.47
+Binary-heap / Bucket-queue time at m=8000: 1.33
+Linear-scan comparisons at m=8000: 11820005; peak backlog 2896

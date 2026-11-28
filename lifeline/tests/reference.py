@@ -66,3 +66,21 @@ def windows_bruteforce(windows, max_n=14):
 
     rec(0, [], 0, 0)
     return best[0], best[1]
+
+
+def alarm_reference(alarms):
+    """Release schedule by the plain definition: at each tick, take the most urgent alarm among
+    those that have arrived (python min over all of them). Returns [(alarm_id, release_tick)].
+    Independent of src: no heap, no merge sort."""
+    left = list(alarms)
+    t, out = 0, []
+    while left:
+        ready = [a for a in left if a[1] <= t]
+        if not ready:
+            t = min(a[1] for a in left)
+            continue
+        best = min(ready, key=lambda a: (-a[2], a[1], a[0]))
+        left.remove(best)
+        out.append((best[0], t))
+        t += 1
+    return out
