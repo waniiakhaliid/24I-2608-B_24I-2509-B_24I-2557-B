@@ -240,3 +240,47 @@
     The clash comes from constant factors and noise, not from a different growth
     order; the slope CIs for DP (+/- 0.381) and Value-greedy (+/- 0.330) are too wide
     to separate the algorithms.
+
+### Entry 4: Module D (emergency queue) binary heap vs linear scan (and bucket queue), scaling with m
+- **Date and time written:** 2026-11-28 HH:MM  (fill in the real time)
+- **Commit before run:** (fill in the hash after committing this entry)
+- **Experiment:** Alarms from the sampled cases joined in sample order (pooling,
+  Section 4.3: ticks shifted past the previous case, ids renumbered), first
+  m = 500, 1000, 2000, 4000, 8000. One alarm is released per tick, in urgency order
+  (priority descending, then tick ascending, then alarm_id ascending) among alarms
+  that have arrived. Primary: binary heap on (-priority, tick, alarm_id), written
+  from scratch. Baseline: linear scan of the pending list. Extra series: 10-level
+  FIFO bucket queue. Time: 1 warm-up, median of 5, IQR. Operation counts: key
+  comparisons and element moves for the heap (a swap counts as 2), comparisons and
+  element shifts for the scan, bucket appends and pops for the bucket queue. Also
+  run every sample case and the campaign days with the extra alarm (priority 9 on
+  day 2, priority 10 on day 5, both at tick 0), and compare the release orders.
+- **Expected winner:** Bucket queue or heap on speed, with the linear scan clearly
+  slowest at large m. All three must produce the same release order.
+- **Numerical prediction (with tolerance):**
+  1. Heap time slope vs m: 1.15 (tolerance +/- 0.25), since the cost is O(m log m).
+  2. Linear-scan time slope vs m: 1.7 (tolerance +/- 0.35). The backlog grows
+     linearly within a case, so the scan is quadratic, but the pool is made of
+     separate cases, so the pooled slope should sit below 2.
+  3. Bucket-queue time slope vs m: 1.0 (tolerance +/- 0.2).
+  4. Heap at m = 8000: about 80 ms, tolerance x/÷ 3. Linear scan at m = 8000: about
+     1.5 s, tolerance x/÷ 3.
+  5. Linear scan / heap time ratio at m = 8000: about 20, tolerance x/÷ 3.
+  6. Heap / bucket-queue time ratio at m = 8000: about 3, tolerance x/÷ 2.5. The
+     bucket queue wins because there are only 10 priorities.
+  7. The linear scan's comparisons at m = 8000 are about 3 million, tolerance
+     x/÷ 2 (backlog about m^2/6 per case, summed over the pooled cases).
+  8. All three algorithms release alarms in the identical order on every input, and
+     no alarm is released before its arrival tick (no tolerance).
+- **Reasoning:** The sample summary shows 1.29 to 1.74 alarms per tick on tiers M, L
+  and X against one release per tick, so a backlog builds and drains within each
+  case. The scan costs the backlog size per release, which gives roughly m^2/6 per
+  case, while the heap pays about log2(backlog) per alarm. Pooling joins independent
+  cases, so the scan's growth should be less than quadratic. I have not looked at
+  the number of distinct priorities in the data; the proposal assumed 10. The
+  absolute times assume about 0.5 microseconds per elementary step in Python, as
+  in Modules B and C, and I am least sure of the 20x ratio.
+- **After the run:**
+  - Measured:
+  - What I got wrong and why:
+  - Theory vs measurement clash (if any):
