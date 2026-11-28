@@ -4,8 +4,8 @@ import argparse
 import random
 import time
 from openpyxl import Workbook
-from common import RANGES, case_id, rng_for, scenario_of, tier_of
-import crates as cr, network as nw, radio as rd, windows as wd, tour as tr, planning as pl
+from lifeline.data.phase1.generator.common import RANGES, case_id, rng_for, scenario_of, tier_of
+import lifeline.data.phase1.generator.crates as cr, lifeline.data.phase1.generator.network as nw, lifeline.data.phase1.generator.radio as rd, lifeline.data.phase1.generator.windows as wd, lifeline.data.phase1.generator.tour as tr, lifeline.data.phase1.generator.planning as pl
 
 SHEETS = {
     "cases": ["case_id", "group_seed", "case_no", "tier", "scenario", "capacity", "target_0", "target_1",

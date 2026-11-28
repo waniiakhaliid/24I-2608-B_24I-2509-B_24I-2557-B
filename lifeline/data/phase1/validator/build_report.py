@@ -4,7 +4,7 @@ copy must be REJECTED with the expected rule code.
  usage: uv run python lifeline/validator/build_report.py lifeline/cases.xlsx"""
 import os
 import sys
-from validate import validate, report_lines
+from lifeline.data.phase1.validator.validate import validate, report_lines
 
 here = os.path.dirname(os.path.abspath(__file__))
 tests = os.path.join(here, "tests")

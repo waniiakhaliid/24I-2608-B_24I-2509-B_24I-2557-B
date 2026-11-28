@@ -151,3 +151,49 @@
     - The target is unreachable in 46 of 154 case-days (day 2: 4, day 3: 8, day 4: 5,
       day 5: 5, day 6: 13, day 7: 11). On 4-48, day 6 is unreachable. The campaign
       must therefore check reachability every day and skip the trip when it fails.
+### Entry 3: Module C (rescue scheduling) earliest-finish greedy and weighted-interval DP vs greedy by value, scaling with n
+- **Date and time written:** 2026-11-28 HH:MM  (fill in the real time)
+- **Commit before run:** (fill in the hash after committing this entry)
+- **Experiment:** Windows from the sampled cases joined in sample order (pooling,
+  Section 4.3: window times shifted by 1440 minutes per case, ids renumbered), first
+  n = 200, 400, 800, 1600, 3200. Touching windows are compatible (finish <= next
+  start). Primary: earliest-finish greedy (maximise count) and weighted-interval DP
+  with binary search (maximise value). Baseline: greedy by value (highest value
+  first, skip any window that overlaps one already chosen). Time: 1 warm-up, median
+  of 5, IQR. Operation counts: key comparisons and element moves for the sort, binary
+  search steps and table cells for the DP, windows examined for the greedy passes;
+  sorting counted separately from the selection pass. Also run every sample case
+  (count and value for each algorithm), and the 10 tier S cases against the
+  `window_count_opt` and `window_value_opt` claims.
+- **Expected winner:**
+  - Speed: greedy by value and earliest-finish greedy are about equal; the DP is
+    slowest by a small constant factor.
+  - Quality: the DP wins on value and earliest-finish wins on count. Greedy by value
+    should lose on both.
+- **Numerical prediction (with tolerance):**
+  1. Time slope vs n for all three algorithms: 1.1 (tolerance +/- 0.25), since each is
+     O(n log n) and dominated by the sort.
+  2. Weighted DP at n = 3200: about 15 ms, tolerance x/÷ 3. Earliest-finish greedy at
+     n = 3200: about 5 ms, tolerance x/÷ 3.
+  3. DP / earliest-finish time ratio at n = 3200: about 3, tolerance x/÷ 2.5.
+  4. Greedy by value reaches about 80% of the DP's total value on the pooled inputs,
+     tolerance +/- 15 points.
+  5. Greedy by value schedules about 70% as many windows as earliest-finish,
+     tolerance +/- 20 points.
+  6. Earliest-finish count equals `window_count_opt`, and DP value equals
+     `window_value_opt`, on all 10 tier S cases (no tolerance).
+  7. The DP's value is at least as high as that of any other algorithm on every input,
+     and earliest-finish's count is at least as high as any other's (no tolerance).
+- **Reasoning:** All three algorithms sort once and then make one pass, so growth should
+  be close to n log n, a slope slightly above 1. The DP adds a binary search per
+  window, which costs a few times more than a plain pass, hence the 3x guess. Pooled
+  inputs are independent blocks (each case sits in its own 1440-minute slot), so
+  they should behave like many copies of a single case; quality ratios should not
+  drift with n. The 80% and 70% figures are my least certain numbers: I have not
+  looked at how heavily the sample windows overlap, only that tier L cases have about
+  1,000 to 2,500 windows in a 1440-minute day. The absolute times assume about 1 to
+  2 microseconds per window in pure Python.
+- **After the run:**
+  - Measured:
+  - What I got wrong and why:
+  - Theory vs measurement clash (if any):      
